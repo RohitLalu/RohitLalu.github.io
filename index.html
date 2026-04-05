@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rohit Lalu | Portfolio</title>
+    <style>
+        /* PCB Theme Base */
+        body {
+            background-color: #0d381e; /* Dark green PCB board */
+            background-image: 
+                linear-gradient(#155c31 1px, transparent 1px),
+                linear-gradient(90deg, #155c31 1px, transparent 1px);
+            background-size: 30px 30px; /* Grid lines */
+            color: #d1e8d5;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Silkscreen text (White text on PCB) */
+        header {
+            text-align: center;
+            padding: 50px 20px;
+            color: #ffffff;
+            text-shadow: 0 0 5px #ffffff;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #c9a738; /* Gold contacts color */
+            font-size: 1.2rem;
+            margin-top: 0;
+        }
+
+        /* The Motherboard Layout */
+        .motherboard {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 60px;
+            padding: 50px;
+            position: relative;
+        }
+
+        /* IC Chip Design */
+        .chip-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .chip-container:hover {
+            transform: scale(1.1);
+        }
+
+        .chip-container:hover .chip-body {
+            box-shadow: 0 0 20px #00ffaa;
+            border-color: #00ffaa;
+        }
+
+        .pins {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pin {
+            width: 8px;
+            height: 15px;
+            background: linear-gradient(to bottom, #d4af37, #f3e5ab); /* Gold pins */
+            border-radius: 2px;
+        }
+
+        .chip-body {
+            background-color: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 5px;
+            width: 140px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.2rem;
+            position: relative;
+            z-index: 10;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        /* Modals (Pop-ups) */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.8); 
+        }
+
+        .modal-content {
+            background-color: #111;
+            margin: 10% auto;
+            padding: 30px;
+            border: 2px solid #00ffaa;
+            width: 60%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px #00ffaa;
+            color: #00ffaa;
+        }
+
+        .close {
+            color: #fff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ff3333;
+        }
+
+        /* Links */
+        a {
+            color: #c9a738;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .data-section {
+            border-left: 2px solid #333;
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ROHIT LALU</h1>
+        <p class="subtitle">System Architecture // REV 1.0</p>
+        <p><a href="https://www.linkedin.com/in/rohitlalu" target="_blank">Connect via LinkedIn Bus</a></p>
+    </header>
+
+    <div class="motherboard">
+        <div class="chip-container" onclick="openModal('projectsModal')">
+            <div class="pins">
+                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
+            </div>
+            <div class="chip-body">PROJECTS</div>
+            <div class="pins">
+                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
+            </div>
+        </div>
+
+        <div class="chip-container" onclick="openModal('experienceModal')">
+            <div class="pins">
+                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
+            </div>
+            <div class="chip-body">EXPERIENCE</div>
+            <div class="pins">
+                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
+            </div>
+        </div>
+
+        <div class="chip-container" onclick="openModal('educationModal')">
+            <div class="pins">
+                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
+            </div>
+            <div class="chip-body">EDUCATION</div>
+            <div class="pins">
+                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="projectsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('projectsModal')">&times;</span>
+            <h2>[ EXECUTE: Projects ]</h2>
+            <div class="data-section">
+                <h3>Project Title 1</h3>
+                <p>Designed a custom hardware pipeline. Tech stack: Verilog, C++, Python.</p>
+            </div>
+            <div class="data-section">
+                <h3>Project Title 2</h3>
+                <p>Optimized chip layout for power efficiency. Improved performance by 15%.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="experienceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('experienceModal')">&times;</span>
+            <h2>[ EXECUTE: Experience ]</h2>
+            <div class="data-section">
+                <h3>Your Job Title</h3>
+                <p><strong>Company Name</strong> | Jan 2023 - Present</p>
+                <p>Add your bullet points from your resume here. Describe how you contributed to the engineering team.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="educationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('educationModal')">&times;</span>
+            <h2>[ EXECUTE: Education ]</h2>
+            <div class="data-section">
+                <h3>Degree Name (e.g. B.S. Electrical Engineering)</h3>
+                <p><strong>University Name</strong> | Graduation Year</p>
+                <p>Relevant Coursework: VLSI Design, Microprocessors, Data Structures.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) {
+            document.getElementById(id).style.display = "block";
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        // Close modal if user clicks outside of the chip content
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
