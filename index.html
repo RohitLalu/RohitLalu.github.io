@@ -3,233 +3,503 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rohit Lalu | Portfolio</title>
+    <title>Rohit L | Hardware Portfolio</title>
     <style>
-        /* PCB Theme Base */
-        body {
-            background-color: #0d381e; /* Dark green PCB board */
-            background-image: 
-                linear-gradient(#155c31 1px, transparent 1px),
-                linear-gradient(90deg, #155c31 1px, transparent 1px);
-            background-size: 30px 30px; /* Grid lines */
-            color: #d1e8d5;
-            font-family: 'Courier New', Courier, monospace;
+        :root {
+            --bg-color: #030816;
+            --trace-color: #0c2b5e;
+            --glow-color: #00d2ff;
+            --text-color: #e0f2fe;
+            --die-border: #1e3a8a;
+            --die-bg: rgba(3, 8, 22, 0.9);
+        }
+
+        body, html {
             margin: 0;
             padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
             overflow-x: hidden;
         }
 
-        /* Silkscreen text (White text on PCB) */
+        /* Interactive Canvas Background */
+        #network-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none; /* Let clicks pass through */
+        }
+
+        /* Header UI */
         header {
+            position: relative;
+            z-index: 10;
             text-align: center;
-            padding: 50px 20px;
-            color: #ffffff;
-            text-shadow: 0 0 5px #ffffff;
+            padding: 40px 20px 20px;
+            text-shadow: 0 0 10px var(--glow-color);
         }
 
         h1 {
             font-size: 3rem;
-            margin-bottom: 5px;
-            letter-spacing: 2px;
+            margin: 0;
+            letter-spacing: 4px;
+            color: #ffffff;
         }
 
         .subtitle {
-            color: #c9a738; /* Gold contacts color */
-            font-size: 1.2rem;
-            margin-top: 0;
+            font-size: 1.1rem;
+            color: var(--glow-color);
+            margin-top: 10px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        /* The Motherboard Layout */
-        .motherboard {
+        .links a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 5px 10px;
+            border: 1px solid var(--glow-color);
+            border-radius: 4px;
+            background: rgba(0, 210, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .links a:hover {
+            background: var(--glow-color);
+            color: #000;
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        /* Hardware Components Container */
+        .hardware-board {
+            position: relative;
+            z-index: 10;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            gap: 60px;
-            padding: 50px;
-            position: relative;
+            gap: 80px;
+            padding: 60px 20px;
+            min-height: 50vh;
         }
 
-        /* IC Chip Design */
-        .chip-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* Base Chip Styles */
+        .component {
             cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .chip-container:hover {
-            transform: scale(1.1);
-        }
-
-        .chip-container:hover .chip-body {
-            box-shadow: 0 0 20px #00ffaa;
-            border-color: #00ffaa;
-        }
-
-        .pins {
-            display: flex;
-            gap: 10px;
-        }
-
-        .pin {
-            width: 8px;
-            height: 15px;
-            background: linear-gradient(to bottom, #d4af37, #f3e5ab); /* Gold pins */
-            border-radius: 2px;
-        }
-
-        .chip-body {
-            background-color: #1a1a1a;
-            border: 2px solid #333;
-            border-radius: 5px;
-            width: 140px;
-            height: 80px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #fff;
+            text-align: center;
             font-weight: bold;
             font-size: 1.2rem;
-            position: relative;
-            z-index: 10;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
+            color: var(--glow-color);
+            background: #081226;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5);
+            border: 2px solid #1a365d;
         }
 
-        /* Modals (Pop-ups) */
+        .component:hover {
+            transform: scale(1.1);
+            box-shadow: inset 0 0 20px rgba(0,210,255,0.2), 0 0 30px var(--glow-color);
+            border-color: var(--glow-color);
+            color: #fff;
+        }
+
+        /* 1. Projects: FPGA Array */
+        .fpga {
+            width: 140px;
+            height: 140px;
+            border-radius: 8px;
+            background-image: radial-gradient(#1e3a8a 15%, transparent 16%);
+            background-size: 14px 14px;
+            background-position: 0 0;
+        }
+
+        /* 2. Experience: Central Processing Unit (CPU) */
+        .cpu {
+            width: 160px;
+            height: 160px;
+            border-radius: 5px;
+            border: 4px solid #334155;
+            background: #0f172a;
+        }
+        .cpu::after {
+            content: "EXPERIENCE";
+            position: absolute;
+            background: #cbd5e1; /* Silver IHS */
+            color: #000;
+            width: 110px;
+            height: 110px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            border-radius: 4px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* 3. Education: RAM Stick */
+        .ram-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .ram {
+            width: 260px;
+            height: 60px;
+            border-radius: 4px;
+            background: #081226;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 0;
+        }
+        .ram-chips {
+            width: 30px;
+            height: 40px;
+            background: #020617;
+            border: 1px solid #1e3a8a;
+            border-radius: 2px;
+        }
+        .ram-text {
+            position: absolute;
+            letter-spacing: 3px;
+        }
+        .ram-pins {
+            display: flex;
+            gap: 4px;
+            width: 250px;
+            height: 12px;
+            background: transparent;
+        }
+        .ram-pin {
+            flex: 1;
+            background: linear-gradient(to bottom, #fcd34d, #b45309);
+            border-radius: 0 0 2px 2px;
+        }
+
+        /* Modals (Internal Die Architecture) */
         .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 100; 
+            display: none;
+            position: fixed;
+            z-index: 100;
             left: 0;
             top: 0;
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0,0,0,0.8); 
+            width: 100%;
+            height: 100%;
+            background-color: rgba(1, 4, 10, 0.85);
+            backdrop-filter: blur(5px);
         }
 
-        .modal-content {
-            background-color: #111;
-            margin: 10% auto;
-            padding: 30px;
-            border: 2px solid #00ffaa;
-            width: 60%;
-            max-width: 600px;
-            border-radius: 10px;
-            box-shadow: 0 0 30px #00ffaa;
-            color: #00ffaa;
+        .die-shot {
+            background-color: var(--die-bg);
+            margin: 5% auto;
+            width: 85%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid var(--glow-color);
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(0, 210, 255, 0.4);
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+            position: relative;
         }
 
-        .close {
+        .die-header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--glow-color);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .die-header h2 {
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             color: #fff;
-            float: right;
-            font-size: 28px;
+        }
+
+        .close-btn {
+            color: var(--glow-color);
+            font-size: 30px;
             font-weight: bold;
             cursor: pointer;
+            transition: color 0.3s;
         }
 
-        .close:hover {
-            color: #ff3333;
+        .close-btn:hover {
+            color: #ff3366;
         }
 
-        /* Links */
-        a {
-            color: #c9a738;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
+        /* Logic Blocks inside the Die */
+        .logic-block {
+            border: 1px solid var(--die-border);
+            background: rgba(30, 58, 138, 0.1);
+            padding: 15px;
+            position: relative;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+            transition: background 0.3s;
         }
 
-        .data-section {
-            border-left: 2px solid #333;
-            padding-left: 15px;
-            margin-bottom: 20px;
+        .logic-block:hover {
+            background: rgba(0, 210, 255, 0.05);
+            border-color: var(--glow-color);
         }
+
+        .logic-block.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .block-label {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.7rem;
+            color: #475569;
+            text-transform: uppercase;
+        }
+
+        h3 {
+            color: var(--glow-color);
+            margin-top: 0;
+            font-size: 1.1rem;
+            border-bottom: 1px dashed var(--die-border);
+            padding-bottom: 5px;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+
+        .date-badge {
+            display: inline-block;
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        /* Scrollbar styling for die shot */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--die-border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--glow-color); }
+
     </style>
 </head>
 <body>
 
+    <canvas id="network-canvas"></canvas>
+
     <header>
-        <h1>ROHIT LALU</h1>
-        <p class="subtitle">System Architecture // REV 1.0</p>
-        <p><a href="https://www.linkedin.com/in/rohitlalu" target="_blank">Connect via LinkedIn Bus</a></p>
+        <h1>ROHIT L</h1>
+        <p class="subtitle">Electronics & Communication Engineering Student[cite: 7]. Aspiring to pursue a career in semiconductor design and computer architecture[cite: 9].</p>
+        <br>
+        <div class="links">
+            <a href="mailto:rohitlalu@yahoo.com" target="_blank">EMAIL [cite: 3]</a>
+            <a href="https://linkedin.com/in/rohitlalu" target="_blank">LINKEDIN [cite: 5]</a>
+            <a href="https://github.com/RohitLalu" target="_blank">GITHUB [cite: 6]</a>
+        </div>
     </header>
 
-    <div class="motherboard">
-        <div class="chip-container" onclick="openModal('projectsModal')">
-            <div class="pins">
-                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
-            </div>
-            <div class="chip-body">PROJECTS</div>
-            <div class="pins">
-                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
-            </div>
+    <div class="hardware-board">
+        <div class="component fpga" onclick="openModal('projectsModal')">
+            <span style="background: var(--bg-color); padding: 5px; border-radius: 3px;">PROJECTS</span>
         </div>
 
-        <div class="chip-container" onclick="openModal('experienceModal')">
-            <div class="pins">
-                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
+        <div class="component cpu" onclick="openModal('experienceModal')">
             </div>
-            <div class="chip-body">EXPERIENCE</div>
-            <div class="pins">
-                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
-            </div>
-        </div>
 
-        <div class="chip-container" onclick="openModal('educationModal')">
-            <div class="pins">
-                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
+        <div class="ram-container component" style="background: transparent; box-shadow: none; border: none;" onclick="openModal('educationModal')">
+            <div class="ram">
+                <div class="ram-chips"></div><div class="ram-chips"></div><div class="ram-chips"></div>
+                <div class="ram-chips"></div><div class="ram-chips"></div><div class="ram-chips"></div>
+                <span class="ram-text">EDUCATION</span>
             </div>
-            <div class="chip-body">EDUCATION</div>
-            <div class="pins">
-                <div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div>
+            <div class="ram-pins">
+                <script>
+                    for(let i=0; i<40; i++) document.write('<div class="ram-pin"></div>');
+                </script>
             </div>
         </div>
     </div>
 
     <div id="projectsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('projectsModal')">&times;</span>
-            <h2>[ EXECUTE: Projects ]</h2>
-            <div class="data-section">
-                <h3>Project Title 1</h3>
-                <p>Designed a custom hardware pipeline. Tech stack: Verilog, C++, Python.</p>
+        <div class="die-shot">
+            <div class="die-header">
+                <h2>[ ARCHITECTURE: Projects Data ]</h2>
+                <span class="close-btn" onclick="closeModal('projectsModal')">&times;</span>
             </div>
-            <div class="data-section">
-                <h3>Project Title 2</h3>
-                <p>Optimized chip layout for power efficiency. Improved performance by 15%.</p>
+
+            <div class="logic-block full-width">
+                <span class="block-label">Logic Block 01</span>
+                <h3>RTL to GDSII Flow for PicoSOC integrated with AES Block [cite: 24]</h3>
+                <span class="date-badge">Jan 2025 - Present [cite: 25]</span>
+                <ul>
+                    <li>Primarily focusing on Synthesis and Macro creation of pre existing RTL design files[cite: 26].</li>
+                    <li>Modifying standard TCL files to learn more about better power, area and performance enhancements in Yosys and OpenROAD[cite: 26].</li>
+                </ul>
+            </div>
+
+            <div class="logic-block">
+                <span class="block-label">DSP Block 02</span>
+                <h3>Dual Edge 5 Tap FIR Filter Hardware Implementation [cite: 27]</h3>
+                <span class="date-badge">Feb 2025 - Present [cite: 26]</span>
+                <ul>
+                    <li>Designing a dual-edge 5-tap FIR filter that exploits clock edge asymmetry for performance: addition stages trigger on posedge, multiplication on negedge[cite: 28].</li>
+                    <li>Current focus spans design architecture refinement and verification of timing closure on dual-edge operations, pipelined data flow correctness, and overflow detection across both addition and multiplication paths[cite: 29].</li>
+                </ul>
+            </div>
+
+            <div class="logic-block">
+                <span class="block-label">Macro 03</span>
+                <h3>Time Domain Compute-in-Memory accelerator [cite: 30]</h3>
+                <span class="date-badge">Dec 2025 - Feb 2025 [cite: 31]</span>
+                <ul>
+                    <li>Developing an energy-efficient Time-Domain CIM accelerator using 1TIR memristor arrays to execute matrix-vector multiplications via PWM driven charge accumulation[cite: 32].</li>
+                    <li>Designing Verilog-A modules as digital macros to fully integrate into a mixed signal chip[cite: 33].</li>
+                </ul>
+            </div>
+
+            <div class="logic-block">
+                <span class="block-label">Analog 04</span>
+                <h3>4 bit Segmented Current Steering DAC Design [cite: 34]</h3>
+                <span class="date-badge">Oct 2025 - Nov 2025 [cite: 35]</span>
+                <ul>
+                    <li>Integrated PMOS based cascading current mirrors with NMOS switches controlled through thermometer encoding in LTSpice[cite: 36].</li>
+                    <li>Developed Verilog code to convert binary codes to one-hot encoding to be used in the Spice simulation[cite: 36].</li>
+                </ul>
+            </div>
+
+            <div class="logic-block">
+                <span class="block-label">Core 05</span>
+                <h3>8 bit Processor on FPGA [cite: 37]</h3>
+                <span class="date-badge">Oct 2024 - Mar 2025 [cite: 41]</span>
+                <ul>
+                    <li>Developed a small-scale 8 bit processor on Verilog to run on Tang Nano 9K FPGA board[cite: 38].</li>
+                    <li>Created custom assembly code and assembler for ease of execution[cite: 39].</li>
+                </ul>
+            </div>
+
+            <div class="logic-block full-width">
+                <span class="block-label">Robotics Subsystem</span>
+                <h3>Basketball Playing Robots & Video Frame Interpolation [cite: 40, 45]</h3>
+                <ul>
+                    <li>Created the complete software architecture for the 2 basketball playing robots involving their semi-automatic mechanisms including lock-in functionalities (Aug 2024 - July 2025)[cite: 42, 43].</li>
+                    <li>Integrated MicroROS to facilitate communication between Raspberry Pi Pico ROS2 nodes on Raspberry Pi 4[cite: 44].</li>
+                    <li>Identified and created unique priority dependent tasks for signal processing including frame acquisition, buffering, interpolation and display using RTOS (Sep 2025 - Nov 2025)[cite: 46, 47, 49].</li>
+                    <li>Designed EDF based RTOS scheduler by layering it on top of the preliminary FreeRTOS scheduler[cite: 50].</li>
+                </ul>
             </div>
         </div>
     </div>
 
     <div id="experienceModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('experienceModal')">&times;</span>
-            <h2>[ EXECUTE: Experience ]</h2>
-            <div class="data-section">
-                <h3>Your Job Title</h3>
-                <p><strong>Company Name</strong> | Jan 2023 - Present</p>
-                <p>Add your bullet points from your resume here. Describe how you contributed to the engineering team.</p>
+        <div class="die-shot">
+            <div class="die-header">
+                <h2>[ PIPELINE: Experience ]</h2>
+                <span class="close-btn" onclick="closeModal('experienceModal')">&times;</span>
+            </div>
+
+            <div class="logic-block full-width">
+                <span class="block-label">Execution Unit 1</span>
+                <h3>IIT Delhi Summer Research Intern [cite: 19]</h3>
+                <span class="date-badge">May 2025 - July 2025 [cite: 21]</span>
+                <ul>
+                    <li>Designed a 2-wheeled path following self balancing robot under the guidance of Prof. Subashish Datta[cite: 22].</li>
+                    <li>Implemented a Kalman filter for noiseless data accumulation to devise the PID control algorithm for stability as well as communication protocols like I&sup2;C and UART[cite: 22].</li>
+                </ul>
+            </div>
+
+            <div class="logic-block">
+                <span class="block-label">Execution Unit 2</span>
+                <h3>CSD Robocon NITK [cite: 55]</h3>
+                <span class="date-badge">Aug 2024 - Present [cite: 56]</span>
+                <ul>
+                    <li>Core Electronics & Programming Member[cite: 55].</li>
+                    <li>Worked on interesting robotics projects which involve control theory, electronics and programming[cite: 57].</li>
+                    <li>Built multiple robots including Fast Line Follower, 3-DOF Robotic arm and Basketball playing robots[cite: 57].</li>
+                </ul>
+            </div>
+
+            <div class="logic-block">
+                <span class="block-label">Execution Unit 3</span>
+                <h3>ACM NITK [cite: 58]</h3>
+                <span class="date-badge">Oct 2024 - Present [cite: 59]</span>
+                <ul>
+                    <li>Executive Member[cite: 58].</li>
+                    <li>Worked on FPGA based projects which involved designing digital systems[cite: 60].</li>
+                    <li>Organise educational sessions and events[cite: 61].</li>
+                </ul>
             </div>
         </div>
     </div>
 
     <div id="educationModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('educationModal')">&times;</span>
-            <h2>[ EXECUTE: Education ]</h2>
-            <div class="data-section">
-                <h3>Degree Name (e.g. B.S. Electrical Engineering)</h3>
-                <p><strong>University Name</strong> | Graduation Year</p>
-                <p>Relevant Coursework: VLSI Design, Microprocessors, Data Structures.</p>
+        <div class="die-shot">
+            <div class="die-header">
+                <h2>[ MEMORY: Education & Skills ]</h2>
+                <span class="close-btn" onclick="closeModal('educationModal')">&times;</span>
+            </div>
+
+            <div class="logic-block full-width">
+                <span class="block-label">L1 Cache</span>
+                <h3>National Institute of Technology Karnataka [cite: 11]</h3>
+                <span class="date-badge">July 2023 - Present [cite: 14]</span>
+                <ul>
+                    <li>BTech in Electronics & Communication Engineering, Minor in Computer Science[cite: 12].</li>
+                    <li><strong>CGPA:</strong> 9.77[cite: 13].</li>
+                    <li><strong>Relevant Coursework:</strong> VLSI Design, Mixed Signal Design, Analog Integrated Circuits, Computer Organisation, Microprocessors (ARM), Digital System Design, Control Systems, Analog Electronics[cite: 15].</li>
+                </ul>
+            </div>
+
+            <div class="logic-block">
+                <span class="block-label">Instruction ROM</span>
+                <h3>CENSE Winter School, IISc [cite: 16]</h3>
+                <span class="date-badge">December 2025 [cite: 20]</span>
+                <ul>
+                    <li>Two week winter school programme covering topics ranging from semiconductor manufacturing, testing and packaging techniques[cite: 17].</li>
+                </ul>
+            </div>
+
+            <div class="logic-block">
+                <span class="block-label">Microcode Array</span>
+                <h3>Technical Skills [cite: 51]</h3>
+                <ul>
+                    <li><strong>Languages:</strong> C, C++, Python, Verilog HDL, MATLAB[cite: 52].</li>
+                    <li><strong>Tools:</strong> Cadence Virtuoso, TerosHDL, GTKWave, Yosys, ROS2, MicroROS, FreeRTOS, Simulink, Linux[cite: 53].</li>
+                    <li><strong>Soft Skills:</strong> Problem Solving, Teamwork and Collaboration, Communication, Marketing[cite: 53].</li>
+                </ul>
             </div>
         </div>
     </div>
 
     <script>
+        // Modal Logic
         function openModal(id) {
             document.getElementById(id).style.display = "block";
         }
@@ -238,12 +508,105 @@
             document.getElementById(id).style.display = "none";
         }
 
-        // Close modal if user clicks outside of the chip content
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = "none";
             }
         }
+
+        // Canvas Animation Logic (Glowing Interconnected Traces)
+        const canvas = document.getElementById('network-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let nodes = [];
+        let mouse = { x: null, y: null };
+
+        function initCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            nodes = [];
+            // Create nodes
+            const nodeCount = Math.floor((width * height) / 15000);
+            for (let i = 0; i < nodeCount; i++) {
+                nodes.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5
+                });
+            }
+        }
+
+        window.addEventListener('resize', initCanvas);
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw trace lines
+            for (let i = 0; i < nodes.length; i++) {
+                let n1 = nodes[i];
+                
+                // Update node position
+                n1.x += n1.vx;
+                n1.y += n1.vy;
+                
+                // Bounce off edges
+                if (n1.x < 0 || n1.x > width) n1.vx *= -1;
+                if (n1.y < 0 || n1.y > height) n1.vy *= -1;
+                
+                for (let j = i + 1; j < nodes.length; j++) {
+                    let n2 = nodes[j];
+                    let dx = n1.x - n2.x;
+                    let dy = n1.y - n2.y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(n1.x, n1.y);
+                        // Draw orthogonal routing (like real PCB traces)
+                        ctx.lineTo(n1.x, n2.y);
+                        ctx.lineTo(n2.x, n2.y);
+                        
+                        // Check mouse distance to trace for glow effect
+                        let mouseDist = 1000;
+                        if (mouse.x) {
+                            let mx = n1.x - mouse.x;
+                            let my = n1.y - mouse.y;
+                            mouseDist = Math.sqrt(mx*mx + my*my);
+                        }
+
+                        if (mouseDist < 150) {
+                            ctx.strokeStyle = `rgba(0, 210, 255, ${1 - mouseDist/150})`;
+                            ctx.lineWidth = 1.5;
+                        } else {
+                            ctx.strokeStyle = `rgba(12, 43, 94, ${1 - dist/120})`;
+                            ctx.lineWidth = 0.5;
+                        }
+                        
+                        ctx.stroke();
+                    }
+                }
+                
+                // Draw nodes
+                ctx.beginPath();
+                ctx.arc(n1.x, n1.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = '#1e3a8a';
+                ctx.fill();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        initCanvas();
+        animate();
     </script>
 </body>
 </html>
