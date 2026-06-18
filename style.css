@@ -11,6 +11,9 @@
     --glow-color: #00d2ff;
     --trace-color: #22d3ee;
 
+    --accent-active: #f59e0b;
+    --accent-active-glow: rgba(245,158,11,0.35);
+
     --text-color: #e2e8f0;
     --muted-text: #94a3b8;
 
@@ -20,6 +23,9 @@
     --border-color: #1e293b;
 
     --console-bg: rgba(15,23,42,0.95);
+
+    --font-display: "IBM Plex Mono", "JetBrains Mono", "Fira Code", monospace;
+    --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
     --transition-speed: 0.3s;
 }
@@ -39,10 +45,7 @@ body {
     background: var(--bg-color);
     color: var(--text-color);
 
-    font-family:
-        "JetBrains Mono",
-        "Fira Code",
-        monospace;
+    font-family: var(--font-body);
 
     min-height: 100vh;
 
@@ -52,18 +55,21 @@ body {
 }
 
 /* ==================================================
-   BACKGROUND CANVAS
+   SCAN CHAIN CANVAS
+   Sized and positioned in JS to hug the pad-ring's
+   own boundary. Sits behind the pad-ring's translucent
+   background, so the trace reads as a faint signal
+   glowing beneath the package surface.
 ================================================== */
 
 #network-canvas {
 
-    position: fixed;
+    position: absolute;
 
     top: 0;
     left: 0;
 
-    width: 100%;
-    height: 100%;
+    pointer-events: none;
 
     z-index: -1;
 }
@@ -84,6 +90,8 @@ body {
 }
 
 .hero h1 {
+
+    font-family: var(--font-display);
 
     font-size: 3rem;
     letter-spacing: 4px;
@@ -117,6 +125,8 @@ body {
 }
 
 .hero-links a {
+
+    font-family: var(--font-display);
 
     color: var(--glow-color);
 
@@ -190,6 +200,8 @@ body {
 
 .chip-label {
 
+    font-family: var(--font-display);
+
     text-align: center;
 
     margin-bottom: 25px;
@@ -222,44 +234,112 @@ body {
 }
 
 /* ==================================================
-   BUS STRUCTURE
+   ROUTING FABRIC (NoC + Manhattan-routed traces)
 ================================================== */
 
-.bus {
+.die-routing {
 
     position: absolute;
 
-    background: var(--trace-color);
+    inset: 0;
 
-    box-shadow:
-        0 0 10px var(--trace-color),
-        0 0 25px rgba(34,211,238,0.5);
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+
+    z-index: 1;
 }
 
-.bus-h {
+.trace {
+
+    fill: none;
+
+    stroke: var(--trace-color);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 10 7;
+
+    opacity: 0.5;
+
+    filter: drop-shadow(0 0 4px rgba(34,211,238,0.5));
+
+    transition: opacity 0.3s ease;
+}
+
+.trace.active-trace {
+
+    stroke: var(--accent-active);
+
+    opacity: 1;
+
+    filter: drop-shadow(0 0 9px var(--accent-active));
+
+    animation: trace-flow 1.1s linear infinite;
+}
+
+@keyframes trace-flow {
+
+    to {
+        stroke-dashoffset: -34;
+    }
+}
+
+.noc-block {
+
+    position: absolute;
 
     top: 50%;
-
-    left: 15%;
-
-    width: 70%;
-
-    height: 6px;
-
-    transform: translateY(-50%);
-}
-
-.bus-v {
-
     left: 50%;
 
-    top: 15%;
+    transform: translate(-50%, -50%);
 
-    width: 6px;
+    width: 140px;
 
-    height: 70%;
+    padding: 14px 10px;
 
-    transform: translateX(-50%);
+    text-align: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #111827,
+            #0a0f1c
+        );
+
+    border: 1px solid rgba(0,210,255,0.35);
+
+    border-radius: 4px;
+
+    z-index: 2;
+
+    box-shadow: 0 0 18px rgba(0,210,255,0.15);
+}
+
+.noc-block h3 {
+
+    font-family: var(--font-display);
+
+    font-size: 0.85rem;
+
+    color: var(--glow-color);
+
+    letter-spacing: 1px;
+}
+
+.noc-block span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    font-family: var(--font-display);
+
+    font-size: 0.6rem;
+
+    color: var(--muted-text);
+
+    letter-spacing: 0.5px;
 }
 
 /* ==================================================
@@ -283,9 +363,17 @@ body {
 
     position: relative;
 
+    z-index: 2;
+
     transition: 0.3s;
 
     overflow: hidden;
+
+    font-family: inherit;
+
+    text-align: left;
+
+    width: 100%;
 }
 
 .die-block::before {
@@ -324,7 +412,18 @@ body {
         0 0 25px rgba(0,210,255,0.25);
 }
 
+.die-block.selected {
+
+    border-color: var(--accent-active);
+
+    box-shadow:
+        0 0 25px var(--accent-active-glow),
+        inset 0 0 15px rgba(245,158,11,0.08);
+}
+
 .die-block h2 {
+
+    font-family: var(--font-display);
 
     color: var(--glow-color);
 
@@ -336,6 +435,8 @@ body {
 .block-meta {
 
     display: inline-block;
+
+    font-family: var(--font-display);
 
     color: var(--muted-text);
 
@@ -349,6 +450,24 @@ body {
     color: var(--text-color);
 
     line-height: 1.6;
+}
+
+.coord-tag {
+
+    position: absolute;
+
+    top: 12px;
+    right: 16px;
+
+    font-family: var(--font-display);
+
+    font-size: 0.65rem;
+
+    letter-spacing: 1px;
+
+    color: var(--muted-text);
+
+    opacity: 0.55;
 }
 
 /* ==================================================
@@ -405,7 +524,11 @@ body {
 
 .console-header h2 {
 
+    font-family: var(--font-display);
+
     color: var(--glow-color);
+
+    letter-spacing: 1px;
 }
 
 /* ==================================================
@@ -424,6 +547,8 @@ body {
 }
 
 .nav-btn {
+
+    font-family: var(--font-display);
 
     border: 1px solid rgba(0,210,255,0.3);
 
@@ -482,6 +607,17 @@ body {
     }
 }
 
+.content-view h3 {
+
+    font-family: var(--font-display);
+
+    font-size: 1.05rem;
+
+    letter-spacing: 0.5px;
+
+    margin-bottom: 8px;
+}
+
 /* ==================================================
    TIMELINE
 ================================================== */
@@ -513,6 +649,8 @@ details {
 
 summary {
 
+    font-family: var(--font-display);
+
     cursor: pointer;
 
     color: var(--glow-color);
@@ -530,6 +668,8 @@ summary {
 
     margin-top: 15px;
 
+    font-family: var(--font-display);
+
     color: var(--glow-color);
 
     text-decoration: none;
@@ -546,6 +686,20 @@ summary {
     background: var(--glow-color);
 
     color: black;
+}
+
+/* ==================================================
+   ACCESSIBILITY: FOCUS STATES
+================================================== */
+
+.die-block:focus-visible,
+.nav-btn:focus-visible,
+.hero-links a:focus-visible,
+.action-btn:focus-visible {
+
+    outline: 2px solid var(--glow-color);
+
+    outline-offset: 3px;
 }
 
 /* ==================================================
@@ -574,11 +728,30 @@ summary {
         grid-row: auto;
     }
 
-    .bus {
+    .die-routing,
+    .noc-block {
         display: none;
     }
 
     .hero h1 {
         font-size: 2rem;
+    }
+}
+
+/* ==================================================
+   REDUCED MOTION
+================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+
+        scroll-behavior: auto !important;
     }
 }
