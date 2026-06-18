@@ -4,11 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rohit L | SoC Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<canvas id="network-canvas"></canvas>
+<canvas id="network-canvas" aria-hidden="true"></canvas>
 
 <header class="hero">
     <h1>ROHIT-L-SOC v1.0</h1>
@@ -29,32 +32,45 @@
 
     <section class="chip-die">
 
-        <div class="bus bus-h"></div>
-        <div class="bus bus-v"></div>
+        <svg class="die-routing" viewBox="0 0 800 650" preserveAspectRatio="none" aria-hidden="true">
+            <path id="trace-experience"   class="trace" d="M150,230 V325 H365" />
+            <path id="trace-education"    class="trace" d="M650,230 V290 H400" />
+            <path id="trace-projects"     class="trace" d="M150,420 V360 H400" />
+            <path id="trace-competitions" class="trace" d="M650,420 V325 H435" />
+        </svg>
 
-        <div class="die-block cpu-core" onclick="openSection('experience')">
+        <div class="noc-block">
+            <h3>NoC</h3>
+            <span>Routing Fabric</span>
+        </div>
+
+        <button type="button" class="die-block cpu-core" data-section="experience" onclick="openSection('experience')">
+            <span class="coord-tag">(0,0)</span>
             <h2>CPU CORE</h2>
             <span class="block-meta">Experience Engine</span>
             <p>IIT Delhi • ACM NITK</p>
-        </div>
+        </button>
 
-        <div class="die-block memory-subsystem" onclick="openSection('education')">
+        <button type="button" class="die-block memory-subsystem" data-section="education" onclick="openSection('education')">
+            <span class="coord-tag">(1,0)</span>
             <h2>MEMORY</h2>
             <span class="block-meta">Knowledge Store</span>
             <p>NITK • Coursework • Skills</p>
-        </div>
+        </button>
 
-        <div class="die-block project-cluster" onclick="openSection('projects')">
+        <button type="button" class="die-block project-cluster" data-section="projects" onclick="openSection('projects')">
+            <span class="coord-tag">(0,1)</span>
             <h2>VLSI CLUSTER</h2>
             <span class="block-meta">Projects</span>
             <p>RTL→GDSII • FIR • DAC • CPU</p>
-        </div>
+        </button>
 
-        <div class="die-block accelerator-cluster" onclick="openSection('competitions')">
+        <button type="button" class="die-block accelerator-cluster" data-section="competitions" onclick="openSection('competitions')">
+            <span class="coord-tag">(1,1)</span>
             <h2>ACCELERATORS</h2>
             <span class="block-meta">Competitions</span>
             <p>Robocon • CIM Accelerator</p>
-        </div>
+        </button>
 
     </section>
 </main>
