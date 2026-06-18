@@ -1,0 +1,306 @@
+
+        :root {
+            --bg-color: #030816;
+            --trace-color: #0c2b5e;
+            --glow-color: #00d2ff;
+            --text-color: #e0f2fe;
+            --die-border: #1e3a8a;
+            --die-bg: rgba(3, 8, 22, 0.9);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: hidden;
+        }
+
+        /* Interactive Canvas Background */
+        #network-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none; /* Let clicks pass through */
+        }
+
+        /* Header UI */
+        header {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 40px 20px 20px;
+            text-shadow: 0 0 10px var(--glow-color);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 0;
+            letter-spacing: 4px;
+            color: #ffffff;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--glow-color);
+            margin-top: 10px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .links a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 5px 10px;
+            border: 1px solid var(--glow-color);
+            border-radius: 4px;
+            background: rgba(0, 210, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .links a:hover {
+            background: var(--glow-color);
+            color: #000;
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        /* Hardware Components Container */
+        .hardware-board {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 80px;
+            padding: 60px 20px;
+            min-height: 50vh;
+        }
+
+        /* Base Chip Styles */
+        .component {
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--glow-color);
+            background: #081226;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5);
+            border: 2px solid #1a365d;
+        }
+
+        .component:hover {
+            transform: scale(1.1);
+            box-shadow: inset 0 0 20px rgba(0,210,255,0.2), 0 0 30px var(--glow-color);
+            border-color: var(--glow-color);
+            color: #fff;
+        }
+
+        /* 1. Projects: FPGA Array */
+        .fpga {
+            width: 140px;
+            height: 140px;
+            border-radius: 8px;
+            background-image: radial-gradient(#1e3a8a 15%, transparent 16%);
+            background-size: 14px 14px;
+            background-position: 0 0;
+        }
+
+        /* 2. Experience: Central Processing Unit (CPU) */
+        .cpu {
+            width: 160px;
+            height: 160px;
+            border-radius: 5px;
+            border: 4px solid #334155;
+            background: #0f172a;
+        }
+        .cpu::after {
+            content: "EXPERIENCE";
+            position: absolute;
+            background: #cbd5e1; /* Silver IHS */
+            color: #000;
+            width: 110px;
+            height: 110px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            border-radius: 4px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* 3. Education: RAM Stick */
+        .ram-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .ram {
+            width: 260px;
+            height: 60px;
+            border-radius: 4px;
+            background: #081226;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 0;
+        }
+        .ram-chips {
+            width: 30px;
+            height: 40px;
+            background: #020617;
+            border: 1px solid #1e3a8a;
+            border-radius: 2px;
+        }
+        .ram-text {
+            position: absolute;
+            letter-spacing: 3px;
+        }
+        .ram-pins {
+            display: flex;
+            gap: 4px;
+            width: 250px;
+            height: 12px;
+            background: transparent;
+        }
+        .ram-pin {
+            flex: 1;
+            background: linear-gradient(to bottom, #fcd34d, #b45309);
+            border-radius: 0 0 2px 2px;
+        }
+
+        /* Modals (Internal Die Architecture) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(1, 4, 10, 0.85);
+            backdrop-filter: blur(5px);
+        }
+
+        .die-shot {
+            background-color: var(--die-bg);
+            margin: 5% auto;
+            width: 85%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid var(--glow-color);
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(0, 210, 255, 0.4);
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .die-header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--glow-color);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .die-header h2 {
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+
+        .close-btn {
+            color: var(--glow-color);
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #ff3366;
+        }
+
+        /* Logic Blocks inside the Die */
+        .logic-block {
+            border: 1px solid var(--die-border);
+            background: rgba(30, 58, 138, 0.1);
+            padding: 15px;
+            position: relative;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+            transition: background 0.3s;
+        }
+
+        .logic-block:hover {
+            background: rgba(0, 210, 255, 0.05);
+            border-color: var(--glow-color);
+        }
+
+        .logic-block.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .block-label {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.7rem;
+            color: #475569;
+            text-transform: uppercase;
+        }
+
+        h3 {
+            color: var(--glow-color);
+            margin-top: 0;
+            font-size: 1.1rem;
+            border-bottom: 1px dashed var(--die-border);
+            padding-bottom: 5px;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+
+        .date-badge {
+            display: inline-block;
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        /* Scrollbar styling for die shot */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--die-border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--glow-color); }
+
+    
