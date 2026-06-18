@@ -1,41 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rohit L | Hardware Portfolio</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rohit L | SoC Portfolio</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <canvas id="network-canvas"></canvas>
+<canvas id="network-canvas"></canvas>
 
-    <header>
-        <h1>ROHIT L</h1>
-        <p class="subtitle">Electronics & Communication Engineering Student[cite: 7]. Aspiring to pursue a career in semiconductor design and computer architecture[cite: 9].</p>
-        <br>
-        <div class="links">
-            <a href="mailto:rohitlalu@yahoo.com" target="_blank">EMAIL [cite: 3]</a>
-            <a href="https://linkedin.com/in/rohitlalu" target="_blank">LINKEDIN [cite: 5]</a>
-            <a href="https://github.com/RohitLalu" target="_blank">GITHUB [cite: 6]</a>
+<header class="hero">
+    <h1>ROHIT-L-SOC v1.0</h1>
+    <p class="subtitle">
+        Electronics & Communication Engineering • Semiconductor Design • Computer Architecture
+    </p>
+
+    <div class="hero-links">
+        <a href="mailto:rohitlalu@yahoo.com">EMAIL</a>
+        <a href="https://linkedin.com/in/rohitlalu" target="_blank">LINKEDIN</a>
+        <a href="https://github.com/RohitLalu" target="_blank">GITHUB</a>
+    </div>
+</header>
+
+<main class="pad-ring">
+
+    <div class="chip-label">ROHIT-L-SOC DIE SHOT</div>
+
+    <section class="chip-die">
+
+        <div class="bus bus-h"></div>
+        <div class="bus bus-v"></div>
+
+        <div class="die-block cpu-core" onclick="openSection('experience')">
+            <h2>CPU CORE</h2>
+            <span class="block-meta">Experience Engine</span>
+            <p>IIT Delhi • ACM NITK</p>
         </div>
-    </header>
 
-    <div class="hardware-board">
-        <div class="component fpga" onclick="openModal('projectsModal')">
-            <span style="background: var(--bg-color); padding: 5px; border-radius: 3px;">PROJECTS</span>
+        <div class="die-block memory-subsystem" onclick="openSection('education')">
+            <h2>MEMORY</h2>
+            <span class="block-meta">Knowledge Store</span>
+            <p>NITK • Coursework • Skills</p>
         </div>
 
-        <div class="component cpu" onclick="openModal('experienceModal')">
-            </div>
+        <div class="die-block project-cluster" onclick="openSection('projects')">
+            <h2>VLSI CLUSTER</h2>
+            <span class="block-meta">Projects</span>
+            <p>RTL→GDSII • FIR • DAC • CPU</p>
+        </div>
 
-        <div class="ram-container component" style="background: transparent; box-shadow: none; border: none;" onclick="openModal('educationModal')">
-            <div class="ram">
-                <div class="ram-chips"></div><div class="ram-chips"></div><div class="ram-chips"></div>
-                <div class="ram-chips"></div><div class="ram-chips"></div><div class="ram-chips"></div>
-                <span class="ram-text">EDUCATION</span>
-            </div>
-            <div class="ram-pins">
-                <script src="script.js"></script>
+        <div class="die-block accelerator-cluster" onclick="openSection('competitions')">
+            <h2>ACCELERATORS</h2>
+            <span class="block-meta">Competitions</span>
+            <p>Robocon • CIM Accelerator</p>
+        </div>
+
+    </section>
+</main>
+
+<section class="information-console">
+
+    <div class="console-header">
+        <h2 id="console-title">PROJECTS</h2>
+    </div>
+
+    <div id="projects" class="content-view active">
+
+        <div class="section-nav">
+            <button class="nav-btn active" onclick="showPanel('rtl',this)">RTL→GDSII</button>
+            <button class="nav-btn" onclick="showPanel('fir',this)">FIR</button>
+            <button class="nav-btn" onclick="showPanel('dac',this)">DAC</button>
+            <button class="nav-btn" onclick="showPanel('cpu8',this)">8-bit CPU</button>
+        </div>
+
+        <div id="rtl" class="content-panel active">
+            <h3>RTL to GDSII Flow for PicoSOC + AES</h3>
+            <p>Complete ASIC implementation flow from RTL through final layout using OpenROAD.</p>
+            <a class="action-btn" href="https://rohitlalu.github.io/" target="_blank">GitHub</a>
+        </div>
+
+        <div id="fir" class="content-panel">
+            <h3>Dual Edge 5-Tap FIR Filter</h3>
+            <p>High-performance FIR architecture utilizing dual-edge operation.</p>
+            <a class="action-btn" href="https://rohitlalu.github.io/" target="_blank">GitHub</a>
+        </div>
+
+        <div id="dac" class="content-panel">
+            <h3>4-bit Segmented Current Steering DAC</h3>
+            <p>Mixed-signal DAC designed and simulated using LTSpice.</p>
+            <a class="action-btn" href="https://rohitlalu.github.io/" target="_blank">GitHub</a>
+        </div>
+
+        <div id="cpu8" class="content-panel">
+            <h3>8-bit Processor on FPGA</h3>
+            <p>Custom ISA, assembler support and FPGA implementation.</p>
+            <a class="action-btn" href="https://rohitlalu.github.io/" target="_blank">GitHub</a>
+        </div>
+
+    </div>
+
+    <div id="experience" class="content-view">
+        <details open>
+            <summary>IIT Delhi Summer Research Internship</summary>
+            <p>Self-balancing robot, Kalman filtering, PID control and embedded communication.</p>
+        </details>
+
+        <details>
+            <summary>ACM NITK</summary>
+            <p>FPGA projects, workshops and technical leadership.</p>
+        </details>
+    </div>
+
+    <div id="education" class="content-view">
+        <div class="timeline-card">
+            <h3>NITK Surathkal</h3>
+            <p>B.Tech ECE + Minor in Computer Science</p>
+            <p>CGPA: 9.77</p>
+        </div>
+
+        <div class="timeline-card">
+            <h3>CENSE Winter School</h3>
+            <p>Semiconductor fabrication, testing and packaging.</p>
+        </div>
+
+        <div class="timeline-card">
+            <h3>Technical Skills</h3>
+            <p>Verilog, C/C++, Python, ROS2, Linux, Cadence, OpenROAD.</p>
+        </div>
+    </div>
+
+    <div id="competitions" class="content-view">
+        <details open>
+            <summary>Robocon Basketball Playing Robots</summary>
+            <p>Autonomous basketball robots for national robotics competition.</p>
+        </details>
+
+        <details>
+            <summary>Time Domain Compute-In-Memory Accelerator</summary>
+            <p>Research-oriented accelerator architecture exploration.</p>
+        </details>
+    </div>
+
+</section>
+
+<script src="script.js"></script>
 </body>
 </html>
