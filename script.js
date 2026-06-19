@@ -1,4 +1,46 @@
 /* ==================================================
+   DIAGNOSTIC BANNER
+   Registered before anything else so it catches any
+   uncaught error from the rest of this file, anywhere
+   on the page. If something breaks, this turns "the
+   site is broken" into a specific, copyable error
+   message instead of silence.
+================================================== */
+
+(function setupDiagnostics() {
+
+    function showBanner(message) {
+
+        let banner = document.getElementById("diagnostic-banner");
+
+        if (!banner) {
+            banner = document.createElement("div");
+            banner.id = "diagnostic-banner";
+            banner.style.cssText =
+                "position:fixed;bottom:0;left:0;right:0;" +
+                "background:#7f1d1d;color:#fecaca;" +
+                "font-family:monospace;font-size:13px;line-height:1.5;" +
+                "padding:10px 16px;z-index:99999;" +
+                "white-space:pre-wrap;word-break:break-word;";
+            document.body.appendChild(banner);
+        }
+
+        banner.textContent = "SOC_DEBUG // script error: " + message;
+    }
+
+    window.addEventListener("error", event => {
+        const detail = event.error && event.error.stack
+            ? event.error.stack.split("\n")[0]
+            : event.message;
+        showBanner(`${detail} (${event.filename || "script.js"}:${event.lineno})`);
+    });
+
+    window.addEventListener("unhandledrejection", event => {
+        showBanner(`unhandled promise rejection: ${event.reason}`);
+    });
+})();
+
+/* ==================================================
    PORTFOLIO DATA
    Single source of truth for every popup. Each category
    maps to a die-block; each item is one button in that
@@ -146,14 +188,26 @@ const validSections = Object.keys(portfolioData);
 
 /* ==================================================
    MODAL ELEMENTS + STATE
+   Acquired defensively: if any expected element is
+   missing from the HTML, this logs exactly which one
+   instead of failing silently or throwing somewhere
+   unrelated later on.
 ================================================== */
 
-const backdrop = document.getElementById("modal-backdrop");
-const panel = document.getElementById("modal-panel");
-const modalTitle = document.getElementById("modal-title");
-const modalSubtitle = document.getElementById("modal-subtitle");
-const modalBody = document.getElementById("modal-body");
-const modalClose = document.getElementById("modal-close");
+function getRequiredElement(id) {
+    const el = document.getElementById(id);
+    if (!el) {
+        console.error(`SOC_DEBUG: expected element #${id} was not found in the page.`);
+    }
+    return el;
+}
+
+const backdrop = getRequiredElement("modal-backdrop");
+const panel = getRequiredElement("modal-panel");
+const modalTitle = getRequiredElement("modal-title");
+const modalSubtitle = getRequiredElement("modal-subtitle");
+const modalBody = getRequiredElement("modal-body");
+const modalClose = getRequiredElement("modal-close");
 
 const dieBlocks = document.querySelectorAll(".die-block");
 const traces = document.querySelectorAll(".trace");
@@ -298,59 +352,91 @@ function renderItemDetail(categoryId, itemId) {
 
 /* ==================================================
    OPEN / CLOSE / NAVIGATE
+   Each entry point is wrapped so that a problem opening
+   ONE popup can't take down the click-handling for every
+   other block on the page -- the failure stays local and
+   visible (via the diagnostic banner) instead of making
+   the whole site look inert.
 ================================================== */
 
 function openCategory(categoryId, triggerEl) {
 
-    if (!portfolioData[categoryId]) {
-        return;
+    try {
+
+        if (!portfolioData[categoryId]) {
+            return;
+        }
+
+        if (!backdrop || !panel || !modalBody) {
+            console.error("SOC_DEBUG: modal elements missing, cannot open popup.");
+            return;
+        }
+
+        lastFocusedElement = triggerEl || document.activeElement;
+
+        currentCategory = categoryId;
+        currentItem = null;
+
+        renderItemList(categoryId);
+        highlightActiveSection(categoryId);
+
+        history.replaceState(null, null, `#${categoryId}`);
+
+        backdrop.classList.add("open");
+        document.body.style.overflow = "hidden";
+
+        focusFirstInModal();
+
+        document.addEventListener("keydown", handleModalKeydown);
+
+    } catch (err) {
+        console.error("SOC_DEBUG: openCategory failed:", err);
     }
-
-    lastFocusedElement = triggerEl || document.activeElement;
-
-    currentCategory = categoryId;
-    currentItem = null;
-
-    renderItemList(categoryId);
-    highlightActiveSection(categoryId);
-
-    history.replaceState(null, null, `#${categoryId}`);
-
-    backdrop.classList.add("open");
-    document.body.style.overflow = "hidden";
-
-    focusFirstInModal();
-
-    document.addEventListener("keydown", handleModalKeydown);
 }
 
 function openItem(categoryId, itemId) {
 
-    currentItem = itemId;
+    try {
 
-    renderItemDetail(categoryId, itemId);
+        currentItem = itemId;
 
-    history.replaceState(null, null, `#${categoryId}/${itemId}`);
+        renderItemDetail(categoryId, itemId);
 
-    focusFirstInModal();
+        history.replaceState(null, null, `#${categoryId}/${itemId}`);
+
+        focusFirstInModal();
+
+    } catch (err) {
+        console.error("SOC_DEBUG: openItem failed:", err);
+    }
 }
 
 function closeModal() {
 
-    backdrop.classList.remove("open");
-    document.body.style.overflow = "";
+    try {
 
-    highlightActiveSection(null);
+        if (!backdrop) {
+            return;
+        }
 
-    currentCategory = null;
-    currentItem = null;
+        backdrop.classList.remove("open");
+        document.body.style.overflow = "";
 
-    history.replaceState(null, null, window.location.pathname + window.location.search);
+        highlightActiveSection(null);
 
-    document.removeEventListener("keydown", handleModalKeydown);
+        currentCategory = null;
+        currentItem = null;
 
-    if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
-        lastFocusedElement.focus();
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+
+        document.removeEventListener("keydown", handleModalKeydown);
+
+        if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+            lastFocusedElement.focus();
+        }
+
+    } catch (err) {
+        console.error("SOC_DEBUG: closeModal failed:", err);
     }
 }
 
@@ -359,14 +445,17 @@ function closeModal() {
 ================================================== */
 
 function focusFirstInModal() {
-    // Run after the DOM update so the freshly-rendered
-    // content is actually focusable.
     requestAnimationFrame(() => {
-        modalClose.focus();
+        if (modalClose) {
+            modalClose.focus();
+        }
     });
 }
 
 function getFocusableInModal() {
+    if (!panel) {
+        return [];
+    }
     return Array.from(
         panel.querySelectorAll(
             'button, a[href], [tabindex]:not([tabindex="-1"])'
@@ -404,13 +493,17 @@ function handleModalKeydown(event) {
     }
 }
 
-modalClose.addEventListener("click", closeModal);
+if (modalClose) {
+    modalClose.addEventListener("click", closeModal);
+}
 
-backdrop.addEventListener("click", event => {
-    if (event.target === backdrop) {
-        closeModal();
-    }
-});
+if (backdrop) {
+    backdrop.addEventListener("click", event => {
+        if (event.target === backdrop) {
+            closeModal();
+        }
+    });
+}
 
 /* ==================================================
    HASH ROUTING
@@ -420,25 +513,31 @@ backdrop.addEventListener("click", event => {
 
 function openFromHash() {
 
-    const hash = window.location.hash.replace("#", "");
+    try {
 
-    if (!hash) {
-        return;
-    }
+        const hash = window.location.hash.replace("#", "");
 
-    const [categoryId, itemId] = hash.split("/");
-
-    if (!validSections.includes(categoryId)) {
-        return;
-    }
-
-    openCategory(categoryId);
-
-    if (itemId) {
-        const exists = portfolioData[categoryId].items.some(i => i.id === itemId);
-        if (exists) {
-            openItem(categoryId, itemId);
+        if (!hash) {
+            return;
         }
+
+        const [categoryId, itemId] = hash.split("/");
+
+        if (!validSections.includes(categoryId)) {
+            return;
+        }
+
+        openCategory(categoryId);
+
+        if (itemId) {
+            const exists = portfolioData[categoryId].items.some(i => i.id === itemId);
+            if (exists) {
+                openItem(categoryId, itemId);
+            }
+        }
+
+    } catch (err) {
+        console.error("SOC_DEBUG: openFromHash failed:", err);
     }
 }
 
@@ -453,6 +552,8 @@ window.addEventListener("load", openFromHash);
 ================================================== */
 
 (function setupScanChain() {
+
+  try {
 
     const canvas =
         document.getElementById("network-canvas");
@@ -593,4 +694,8 @@ window.addEventListener("load", openFromHash);
             draw();
         }
     });
+
+  } catch (err) {
+    console.error("SOC_DEBUG: scan chain setup failed:", err);
+  }
 })();
