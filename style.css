@@ -550,25 +550,29 @@ body::before {
 
 .die-icon {
 
-    width: 46px;
-    height: 46px;
+    width: 58px;
+    height: 58px;
+
+    color: var(--glow-color);
 
     stroke: var(--glow-color);
     stroke-width: 2;
     fill: none;
 
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 
-    transition: stroke 0.25s ease;
+    transition: stroke 0.25s ease, color 0.25s ease;
 }
 
 .die-block:hover .die-icon,
 .die-block:focus-visible .die-icon {
     stroke: var(--text-color);
+    color: var(--text-color);
 }
 
 .die-block.selected .die-icon {
     stroke: var(--accent-active);
+    color: var(--accent-active);
 }
 
 .die-block h2 {
