@@ -33,10 +33,29 @@
     <section class="chip-die">
 
         <svg class="die-routing" viewBox="0 0 800 650" preserveAspectRatio="none" aria-hidden="true">
+
             <path id="trace-experience"   class="trace" d="M150,230 V325 H365" />
             <path id="trace-education"    class="trace" d="M650,230 V290 H400" />
             <path id="trace-projects"     class="trace" d="M150,420 V360 H400" />
             <path id="trace-competitions" class="trace" d="M650,420 V325 H435" />
+
+            <g id="bustag-experience" class="bus-tag">
+                <line x1="232" y1="318" x2="244" y2="332" />
+                <text x="248" y="316">/32</text>
+            </g>
+            <g id="bustag-education" class="bus-tag">
+                <line x1="512" y1="283" x2="524" y2="297" />
+                <text x="486" y="280">/64</text>
+            </g>
+            <g id="bustag-projects" class="bus-tag">
+                <line x1="272" y1="353" x2="284" y2="367" />
+                <text x="288" y="378">/8</text>
+            </g>
+            <g id="bustag-competitions" class="bus-tag">
+                <line x1="537" y1="318" x2="549" y2="332" />
+                <text x="500" y="316">/16</text>
+            </g>
+
         </svg>
 
         <div class="noc-block">
@@ -44,121 +63,111 @@
             <span>Routing Fabric</span>
         </div>
 
-        <button type="button" class="die-block cpu-core" data-section="experience" onclick="openSection('experience')">
+        <button type="button" class="die-block cpu-core" data-section="experience" onclick="openCategory('experience')">
             <span class="coord-tag">(0,0)</span>
-            <h2>CPU CORE</h2>
+            <span class="die-tag">U1 // CPU CORE</span>
+            <svg class="die-icon" viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="16" y="16" width="32" height="32" rx="2" />
+                <line x1="8" y1="22" x2="16" y2="22" />
+                <line x1="8" y1="32" x2="16" y2="32" />
+                <line x1="8" y1="42" x2="16" y2="42" />
+                <line x1="48" y1="22" x2="56" y2="22" />
+                <line x1="48" y1="32" x2="56" y2="32" />
+                <line x1="48" y1="42" x2="56" y2="42" />
+                <line x1="22" y1="8" x2="22" y2="16" />
+                <line x1="32" y1="8" x2="32" y2="16" />
+                <line x1="42" y1="8" x2="42" y2="16" />
+                <line x1="22" y1="48" x2="22" y2="56" />
+                <line x1="32" y1="48" x2="32" y2="56" />
+                <line x1="42" y1="48" x2="42" y2="56" />
+                <circle cx="22" cy="22" r="1.6" fill="currentColor" stroke="none" />
+            </svg>
+            <h2>Experience</h2>
             <span class="block-meta">Experience Engine</span>
             <p>IIT Delhi • ACM NITK</p>
         </button>
 
-        <button type="button" class="die-block memory-subsystem" data-section="education" onclick="openSection('education')">
+        <button type="button" class="die-block memory-subsystem" data-section="education" onclick="openCategory('education')">
             <span class="coord-tag">(1,0)</span>
-            <h2>MEMORY</h2>
+            <span class="die-tag">U2 // MEMORY</span>
+            <svg class="die-icon" viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="10" y="10" width="44" height="44" rx="2" />
+                <line x1="10" y1="21.5" x2="54" y2="21.5" />
+                <line x1="10" y1="32" x2="54" y2="32" />
+                <line x1="10" y1="42.5" x2="54" y2="42.5" />
+                <line x1="21.5" y1="10" x2="21.5" y2="54" />
+                <line x1="32" y1="10" x2="32" y2="54" />
+                <line x1="42.5" y1="10" x2="42.5" y2="54" />
+            </svg>
+            <h2>Education</h2>
             <span class="block-meta">Knowledge Store</span>
             <p>NITK • Coursework • Skills</p>
         </button>
 
-        <button type="button" class="die-block project-cluster" data-section="projects" onclick="openSection('projects')">
+        <button type="button" class="die-block project-cluster" data-section="projects" onclick="openCategory('projects')">
             <span class="coord-tag">(0,1)</span>
-            <h2>VLSI CLUSTER</h2>
+            <span class="die-tag">U3 // VLSI CLUSTER</span>
+            <svg class="die-icon" viewBox="0 0 64 64" aria-hidden="true">
+                <path d="M14 18 H32 a14 14 0 0 1 0 28 H14 Z" />
+                <line x1="6" y1="24" x2="14" y2="24" />
+                <line x1="6" y1="40" x2="14" y2="40" />
+                <line x1="46" y1="32" x2="56" y2="32" />
+                <circle cx="56" cy="32" r="2" fill="currentColor" stroke="none" />
+            </svg>
+            <h2>Projects</h2>
             <span class="block-meta">Projects</span>
             <p>RTL→GDSII • FIR • DAC • CPU</p>
         </button>
 
-        <button type="button" class="die-block accelerator-cluster" data-section="competitions" onclick="openSection('competitions')">
+        <button type="button" class="die-block accelerator-cluster" data-section="competitions" onclick="openCategory('competitions')">
             <span class="coord-tag">(1,1)</span>
-            <h2>ACCELERATORS</h2>
+            <span class="die-tag">U4 // ACCELERATORS</span>
+            <svg class="die-icon" viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="8" y="8" width="14" height="14" rx="1.5" />
+                <rect x="25" y="8" width="14" height="14" rx="1.5" />
+                <rect x="42" y="8" width="14" height="14" rx="1.5" />
+                <rect x="8" y="25" width="14" height="14" rx="1.5" />
+                <rect x="25" y="25" width="14" height="14" rx="1.5" />
+                <rect x="42" y="25" width="14" height="14" rx="1.5" />
+                <line x1="22" y1="15" x2="25" y2="15" />
+                <line x1="39" y1="15" x2="42" y2="15" />
+                <line x1="22" y1="32" x2="25" y2="32" />
+                <line x1="39" y1="32" x2="42" y2="32" />
+                <line x1="15" y1="22" x2="15" y2="25" />
+                <line x1="32" y1="22" x2="32" y2="25" />
+                <line x1="49" y1="22" x2="49" y2="25" />
+            </svg>
+            <h2>Competitions</h2>
             <span class="block-meta">Competitions</span>
-            <p>Robocon • CIM Accelerator</p>
+            <p>Robocon • Samsung Chip Design Studio</p>
         </button>
 
     </section>
 </main>
 
-<section class="information-console">
+<!-- ==================================================
+     POPUP MODAL SHELL
+     One reusable container for every category. JS fills
+     #modal-body with either the item-list view or a
+     single item's detail view, driven by portfolioData
+     in script.js.
+================================================== -->
 
-    <div class="console-header">
-        <h2 id="console-title">PROJECTS</h2>
-    </div>
+<div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title" id="modal-panel">
 
-    <div id="projects" class="content-view active">
-
-        <div class="section-nav">
-            <button class="nav-btn active" onclick="showPanel('rtl',this)">RTL→GDSII</button>
-            <button class="nav-btn" onclick="showPanel('fir',this)">FIR</button>
-            <button class="nav-btn" onclick="showPanel('dac',this)">DAC</button>
-            <button class="nav-btn" onclick="showPanel('cpu8',this)">8-bit CPU</button>
+        <div class="modal-header">
+            <div class="modal-header-text">
+                <h2 id="modal-title">SOC_DEBUG</h2>
+                <span id="modal-subtitle"></span>
+            </div>
+            <button type="button" class="modal-close" id="modal-close" aria-label="Close">✕</button>
         </div>
 
-        <div id="rtl" class="content-panel active">
-            <h3>RTL to GDSII Flow for PicoSOC + AES</h3>
-            <p>Complete ASIC implementation flow from RTL through final layout using OpenROAD.</p>
-            <a class="action-btn" href="https://rohitlalu.github.io/" target="_blank">GitHub</a>
-        </div>
-
-        <div id="fir" class="content-panel">
-            <h3>Dual Edge 5-Tap FIR Filter</h3>
-            <p>High-performance FIR architecture utilizing dual-edge operation.</p>
-            <a class="action-btn" href="https://rohitlalu.github.io/" target="_blank">GitHub</a>
-        </div>
-
-        <div id="dac" class="content-panel">
-            <h3>4-bit Segmented Current Steering DAC</h3>
-            <p>Mixed-signal DAC designed and simulated using LTSpice.</p>
-            <a class="action-btn" href="https://rohitlalu.github.io/" target="_blank">GitHub</a>
-        </div>
-
-        <div id="cpu8" class="content-panel">
-            <h3>8-bit Processor on FPGA</h3>
-            <p>Custom ISA, assembler support and FPGA implementation.</p>
-            <a class="action-btn" href="https://rohitlalu.github.io/" target="_blank">GitHub</a>
-        </div>
+        <div class="modal-body" id="modal-body"></div>
 
     </div>
-
-    <div id="experience" class="content-view">
-        <details open>
-            <summary>IIT Delhi Summer Research Internship</summary>
-            <p>Self-balancing robot, Kalman filtering, PID control and embedded communication.</p>
-        </details>
-
-        <details>
-            <summary>ACM NITK</summary>
-            <p>FPGA projects, workshops and technical leadership.</p>
-        </details>
-    </div>
-
-    <div id="education" class="content-view">
-        <div class="timeline-card">
-            <h3>NITK Surathkal</h3>
-            <p>B.Tech ECE + Minor in Computer Science</p>
-            <p>CGPA: 9.77</p>
-        </div>
-
-        <div class="timeline-card">
-            <h3>CENSE Winter School</h3>
-            <p>Semiconductor fabrication, testing and packaging.</p>
-        </div>
-
-        <div class="timeline-card">
-            <h3>Technical Skills</h3>
-            <p>Verilog, C/C++, Python, ROS2, Linux, Cadence, OpenROAD.</p>
-        </div>
-    </div>
-
-    <div id="competitions" class="content-view">
-        <details open>
-            <summary>Robocon Basketball Playing Robots</summary>
-            <p>Autonomous basketball robots for national robotics competition.</p>
-        </details>
-
-        <details>
-            <summary>Time Domain Compute-In-Memory Accelerator</summary>
-            <p>Research-oriented accelerator architecture exploration.</p>
-        </details>
-    </div>
-
-</section>
+</div>
 
 <script src="script.js"></script>
 </body>
