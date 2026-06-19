@@ -22,12 +22,19 @@
 
     --border-color: #1e293b;
 
-    --console-bg: rgba(15,23,42,0.95);
+    --modal-surface: rgba(5,9,18,0.9);
 
     --font-display: "IBM Plex Mono", "JetBrains Mono", "Fira Code", monospace;
     --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
     --transition-speed: 0.3s;
+
+    /* Shared GDSII-style layout pattern: overlapping flat-color mask
+       layers (metal/poly/diffusion), the way a layout viewer like
+       KLayout or OpenROAD's GUI renders an IC die. Reused as the
+       popup backdrop AND, very faintly, as the page's own background,
+       so both surfaces read as one consistent visual system. */
+    --gdsii-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E %3Crect width='220' height='220' fill='%2304060c'/%3E %3Crect x='10' y='15' width='48' height='22' fill='%2322d3ee' opacity='0.18'/%3E %3Crect x='70' y='10' width='26' height='60' fill='%23f472b6' opacity='0.15'/%3E %3Crect x='110' y='40' width='70' height='18' fill='%23facc15' opacity='0.14'/%3E %3Crect x='20' y='90' width='34' height='34' fill='%2334d399' opacity='0.16'/%3E %3Crect x='90' y='100' width='20' height='50' fill='%2322d3ee' opacity='0.12'/%3E %3Crect x='140' y='90' width='60' height='22' fill='%23f472b6' opacity='0.14'/%3E %3Crect x='10' y='150' width='80' height='16' fill='%23facc15' opacity='0.12'/%3E %3Crect x='120' y='140' width='30' height='60' fill='%2334d399' opacity='0.13'/%3E %3Crect x='170' y='160' width='40' height='40' fill='%2322d3ee' opacity='0.15'/%3E %3Crect x='50' y='170' width='50' height='14' fill='%23f472b6' opacity='0.12'/%3E %3C/svg%3E");
 }
 
 * {
@@ -42,7 +49,11 @@ html {
 
 body {
 
-    background: var(--bg-color);
+    background-color: var(--bg-color);
+    background-image: var(--gdsii-pattern);
+    background-size: 220px 220px;
+    background-blend-mode: screen;
+
     color: var(--text-color);
 
     font-family: var(--font-body);
@@ -52,6 +63,26 @@ body {
     overflow-x: hidden;
 
     position: relative;
+}
+
+/* The page background uses the same GDSII tile as the popups, but
+   at a much lower opacity so it reads as ambient texture rather
+   than competing with foreground content. A thin scrim sits between
+   the pattern and the body's own children to keep that restraint
+   even where elements don't have their own opaque background. */
+body::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(2,6,23,0.86);
+
+    pointer-events: none;
+
+    z-index: -2;
 }
 
 /* ==================================================
@@ -234,7 +265,13 @@ body {
 }
 
 /* ==================================================
-   ROUTING FABRIC (NoC + Manhattan-routed traces)
+   ROUTING FABRIC (NoC + bus interconnect)
+   Each connection is a real multi-bit bus, not a bare
+   wire: a thicker trace plus a slash-and-width tag,
+   the standard schematic symbol for an n-bit bus.
+   Traces flow on hover (via :has(), no JS needed) and
+   persist flowing in amber while their section's popup
+   is open.
 ================================================== */
 
 .die-routing {
@@ -256,16 +293,73 @@ body {
     fill: none;
 
     stroke: var(--trace-color);
-    stroke-width: 3;
+    stroke-width: 5;
     stroke-linecap: round;
-    stroke-dasharray: 10 7;
+    stroke-dasharray: 11 8;
 
-    opacity: 0.5;
+    opacity: 0.45;
 
-    filter: drop-shadow(0 0 4px rgba(34,211,238,0.5));
+    filter: drop-shadow(0 0 4px rgba(34,211,238,0.45));
 
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, stroke 0.3s ease;
 }
+
+.bus-tag line {
+
+    stroke: var(--muted-text);
+    stroke-width: 2;
+
+    opacity: 0.6;
+
+    transition: stroke 0.3s ease, opacity 0.3s ease;
+}
+
+.bus-tag text {
+
+    font-family: var(--font-display);
+
+    font-size: 13px;
+
+    fill: var(--muted-text);
+
+    opacity: 0.7;
+
+    transition: fill 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hover-driven flow: hovering a die-block lights up its
+   own bus without needing any JS event wiring. */
+
+.chip-die:has(.cpu-core:hover) #trace-experience,
+.chip-die:has(.memory-subsystem:hover) #trace-education,
+.chip-die:has(.project-cluster:hover) #trace-projects,
+.chip-die:has(.accelerator-cluster:hover) #trace-competitions {
+
+    opacity: 0.9;
+
+    stroke: var(--glow-color);
+
+    animation: trace-flow 1s linear infinite;
+}
+
+.chip-die:has(.cpu-core:hover) #bustag-experience line,
+.chip-die:has(.memory-subsystem:hover) #bustag-education line,
+.chip-die:has(.project-cluster:hover) #bustag-projects line,
+.chip-die:has(.accelerator-cluster:hover) #bustag-competitions line {
+    stroke: var(--glow-color);
+    opacity: 1;
+}
+
+.chip-die:has(.cpu-core:hover) #bustag-experience text,
+.chip-die:has(.memory-subsystem:hover) #bustag-education text,
+.chip-die:has(.project-cluster:hover) #bustag-projects text,
+.chip-die:has(.accelerator-cluster:hover) #bustag-competitions text {
+    fill: var(--glow-color);
+    opacity: 1;
+}
+
+/* Persistent active state: this section's popup is open. Wins
+   over the hover rules above by appearing later in the file. */
 
 .trace.active-trace {
 
@@ -278,10 +372,20 @@ body {
     animation: trace-flow 1.1s linear infinite;
 }
 
+.bus-tag.active-tag line {
+    stroke: var(--accent-active);
+    opacity: 1;
+}
+
+.bus-tag.active-tag text {
+    fill: var(--accent-active);
+    opacity: 1;
+}
+
 @keyframes trace-flow {
 
     to {
-        stroke-dashoffset: -34;
+        stroke-dashoffset: -38;
     }
 }
 
@@ -344,9 +448,16 @@ body {
 
 /* ==================================================
    DIE BLOCKS
+   Restructured around a hand-drawn circuit-element icon:
+   small reference-designator eyebrow, icon, then the
+   plain-English label ("Experience") as the prominent text.
 ================================================== */
 
 .die-block {
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
     background:
         linear-gradient(
@@ -365,7 +476,7 @@ body {
 
     z-index: 2;
 
-    transition: 0.3s;
+    transition: 0.25s;
 
     overflow: hidden;
 
@@ -402,14 +513,15 @@ body {
     transition: 0.8s;
 }
 
-.die-block:hover {
+.die-block:hover,
+.die-block:focus-visible {
 
     transform: translateY(-6px);
 
     border-color: var(--glow-color);
 
     box-shadow:
-        0 0 25px rgba(0,210,255,0.25);
+        0 0 28px rgba(0,210,255,0.3);
 }
 
 .die-block.selected {
@@ -421,6 +533,44 @@ body {
         inset 0 0 15px rgba(245,158,11,0.08);
 }
 
+.die-tag {
+
+    font-family: var(--font-display);
+
+    font-size: 0.68rem;
+
+    letter-spacing: 1px;
+
+    color: var(--muted-text);
+
+    opacity: 0.65;
+
+    margin-bottom: 14px;
+}
+
+.die-icon {
+
+    width: 46px;
+    height: 46px;
+
+    stroke: var(--glow-color);
+    stroke-width: 2;
+    fill: none;
+
+    margin-bottom: 14px;
+
+    transition: stroke 0.25s ease;
+}
+
+.die-block:hover .die-icon,
+.die-block:focus-visible .die-icon {
+    stroke: var(--text-color);
+}
+
+.die-block.selected .die-icon {
+    stroke: var(--accent-active);
+}
+
 .die-block h2 {
 
     font-family: var(--font-display);
@@ -429,7 +579,7 @@ body {
 
     margin-bottom: 10px;
 
-    font-size: 1.3rem;
+    font-size: 1.4rem;
 }
 
 .block-meta {
@@ -495,47 +645,231 @@ body {
 }
 
 /* ==================================================
-   INFORMATION CONSOLE
+   MODAL: BACKDROP + PANEL
+   One shared popup shell for every category. The GDSII
+   pattern is the panel's outer texture; the inner body
+   sits on its own near-solid surface so the resume
+   content underneath stays comfortably legible.
 ================================================== */
 
-.information-console {
+.modal-backdrop {
 
-    width: min(1400px,95%);
+    position: fixed;
 
-    margin: 40px auto;
+    inset: 0;
 
-    background: var(--console-bg);
+    background: rgba(2,6,23,0.78);
 
-    border: 1px solid rgba(0,210,255,0.2);
+    backdrop-filter: blur(4px);
 
-    backdrop-filter: blur(10px);
+    display: flex;
 
-    padding: 25px;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    z-index: 100;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: opacity 0.25s ease;
 }
 
-.console-header {
-
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-
-    margin-bottom: 20px;
-
-    padding-bottom: 15px;
+.modal-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
 }
 
-.console-header h2 {
+.modal-panel {
+
+    width: min(640px, 100%);
+
+    max-height: min(720px, 90vh);
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: var(--die-inner);
+    background-image: var(--gdsii-pattern);
+    background-size: 220px 220px;
+
+    border: 1px solid rgba(0,210,255,0.3);
+
+    box-shadow: 0 0 50px rgba(0,210,255,0.12);
+
+    transform: translateY(14px) scale(0.98);
+
+    transition: transform 0.25s ease;
+}
+
+.modal-backdrop.open .modal-panel {
+    transform: translateY(0) scale(1);
+}
+
+.modal-header {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    padding: 18px 22px;
+
+    border-bottom: 1px solid rgba(0,210,255,0.2);
+
+    background: rgba(2,6,23,0.55);
+}
+
+.modal-header-text h2 {
 
     font-family: var(--font-display);
+
+    font-size: 1.1rem;
 
     color: var(--glow-color);
 
     letter-spacing: 1px;
 }
 
+.modal-header-text span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    font-family: var(--font-display);
+
+    font-size: 0.7rem;
+
+    color: var(--muted-text);
+
+    letter-spacing: 0.5px;
+}
+
+.modal-close {
+
+    flex-shrink: 0;
+
+    width: 34px;
+    height: 34px;
+
+    border: 1px solid rgba(0,210,255,0.35);
+
+    background: transparent;
+
+    color: var(--glow-color);
+
+    font-family: var(--font-display);
+
+    font-size: 1rem;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.modal-close:hover,
+.modal-close:focus-visible {
+    background: var(--glow-color);
+    color: black;
+}
+
+.modal-body {
+
+    overflow-y: auto;
+
+    padding: 22px;
+
+    background: var(--modal-surface);
+}
+
 /* ==================================================
-   NAVIGATION
+   MODAL: ITEM LIST (category -> items)
 ================================================== */
 
-.section-nav {
+.item-list {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+
+    gap: 12px;
+}
+
+.item-btn {
+
+    font-family: var(--font-display);
+
+    font-size: 0.95rem;
+
+    text-align: left;
+
+    color: var(--text-color);
+
+    background: rgba(255,255,255,0.02);
+
+    border: 1px solid rgba(0,210,255,0.25);
+
+    padding: 16px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.item-btn:hover,
+.item-btn:focus-visible {
+
+    border-color: var(--glow-color);
+
+    background: rgba(0,210,255,0.08);
+
+    transform: translateY(-2px);
+}
+
+.item-btn span {
+
+    display: block;
+
+    margin-top: 6px;
+
+    font-family: var(--font-body);
+
+    font-size: 0.78rem;
+
+    color: var(--muted-text);
+}
+
+/* ==================================================
+   MODAL: ITEM DETAIL
+================================================== */
+
+.item-detail h3 {
+
+    font-family: var(--font-display);
+
+    font-size: 1.15rem;
+
+    margin-bottom: 10px;
+
+    letter-spacing: 0.5px;
+}
+
+.item-detail p {
+
+    line-height: 1.7;
+
+    color: var(--text-color);
+
+    margin-bottom: 16px;
+}
+
+.item-detail-links {
 
     display: flex;
 
@@ -543,130 +877,49 @@ body {
 
     gap: 10px;
 
-    margin-bottom: 20px;
+    margin-top: 4px;
 }
 
-.nav-btn {
+.modal-back-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
 
     font-family: var(--font-display);
 
-    border: 1px solid rgba(0,210,255,0.3);
+    font-size: 0.78rem;
+
+    color: var(--muted-text);
 
     background: transparent;
 
-    color: var(--glow-color);
-
-    padding: 10px 16px;
+    border: none;
 
     cursor: pointer;
 
-    transition: 0.3s;
+    margin-bottom: 18px;
+
+    padding: 0;
+
+    transition: color 0.2s ease;
 }
 
-.nav-btn:hover,
-.nav-btn.active {
-
-    background: var(--glow-color);
-
-    color: black;
-}
-
-/* ==================================================
-   CONTENT PANELS
-================================================== */
-
-.content-view {
-    display: none;
-}
-
-.content-view.active {
-    display: block;
-}
-
-.content-panel {
-    display: none;
-}
-
-.content-panel.active {
-
-    display: block;
-
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.content-view h3 {
-
-    font-family: var(--font-display);
-
-    font-size: 1.05rem;
-
-    letter-spacing: 0.5px;
-
-    margin-bottom: 8px;
-}
-
-/* ==================================================
-   TIMELINE
-================================================== */
-
-.timeline-card {
-
-    padding: 18px;
-
-    margin-bottom: 15px;
-
-    border-left: 4px solid var(--glow-color);
-
-    background:
-        rgba(255,255,255,0.02);
-}
-
-/* ==================================================
-   DETAILS
-================================================== */
-
-details {
-
-    margin-bottom: 15px;
-
-    padding: 15px;
-
-    border: 1px solid rgba(255,255,255,0.08);
-}
-
-summary {
-
-    font-family: var(--font-display);
-
-    cursor: pointer;
-
+.modal-back-btn:hover,
+.modal-back-btn:focus-visible {
     color: var(--glow-color);
-
-    font-weight: bold;
 }
 
 /* ==================================================
-   BUTTONS
+   SHARED BUTTONS / LINKS
+   (reused inside modal content and elsewhere)
 ================================================== */
 
 .action-btn {
 
     display: inline-block;
-
-    margin-top: 15px;
 
     font-family: var(--font-display);
 
@@ -681,9 +934,25 @@ summary {
     transition: 0.3s;
 }
 
-.action-btn:hover {
+.action-btn:hover,
+.action-btn:focus-visible {
 
     background: var(--glow-color);
+
+    color: black;
+}
+
+.action-btn.muted {
+
+    color: var(--muted-text);
+
+    border-color: rgba(148,163,184,0.4);
+}
+
+.action-btn.muted:hover,
+.action-btn.muted:focus-visible {
+
+    background: var(--muted-text);
 
     color: black;
 }
@@ -693,9 +962,11 @@ summary {
 ================================================== */
 
 .die-block:focus-visible,
-.nav-btn:focus-visible,
 .hero-links a:focus-visible,
-.action-btn:focus-visible {
+.action-btn:focus-visible,
+.item-btn:focus-visible,
+.modal-close:focus-visible,
+.modal-back-btn:focus-visible {
 
     outline: 2px solid var(--glow-color);
 
@@ -735,6 +1006,10 @@ summary {
 
     .hero h1 {
         font-size: 2rem;
+    }
+
+    .modal-panel {
+        max-height: 100vh;
     }
 }
 
