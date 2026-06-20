@@ -64,39 +64,55 @@
 const portfolioData = {
 
     experience: {
-        chipTag: "U1 // CPU CORE",
+        chipTag: "Work I have done so far",
         title: "Experience",
-        subtitle: "CPU CORE — Experience Engine",
+        subtitle: "Experience",
         items: [
+           {
+                id: "iisc-blr",
+                name: "IISc Bangalore",
+                fullTitle: "IISc Research Internship",
+                description: "FIA Attacks on AES and PQC schemes (MLKEM512) on ARM Cortex M4 (STM32F303)",
+                github: "https://github.com/RohitLalu/fia_mlkem_cw",
+                attachments: []
+            },
             {
                 id: "iit-delhi",
                 name: "IIT Delhi",
                 fullTitle: "IIT Delhi Summer Research Internship",
-                description: "Self-balancing robot, Kalman filtering, PID control and embedded communication.",
-                github: null,
+                description: "Self-balancing robot\nKalman filtering, PID control and embedded communication.",
+                github: "https://github.com/RohitLalu/BalancingBot__",
                 attachments: []
             },
             {
                 id: "acm-nitk",
                 name: "ACM NITK",
-                fullTitle: "ACM NITK",
-                description: "FPGA projects, workshops and technical leadership.",
+                fullTitle: "Head of Vidyut (electronics SIG under ACM NITK Chapter)",
+                description: "Currently leading the electronics group under ACM NITK. Overseeing FPGA based projects, MCU and analog simulations",
                 github: null,
+                attachments: []
+            },
+           {
+                id: "crn-nitk",
+                name: "CSD Robocon NITK",
+                fullTitle: "EC&P Lead of CSD Robocon NITK",
+                description: "Leading the Electronics and Programming sub system to compete at the prestigious DD Robocon competition",
+                github: "https://github.com/csd-robocon-nitk",
                 attachments: []
             }
         ]
     },
 
     education: {
-        chipTag: "U2 // MEMORY",
+        chipTag: "Education",
         title: "Education",
-        subtitle: "MEMORY SUBSYSTEM — Knowledge Store",
+        subtitle: "Alma Mater",
         items: [
             {
                 id: "nitk-surathkal",
                 name: "NITK Surathkal",
                 fullTitle: "NITK Surathkal",
-                description: "B.Tech ECE + Minor in Computer Science. CGPA: 9.77.",
+                description: "B.Tech ECE + Minor in Computer Science. CGPA (Major): 9.75",
                 github: null,
                 attachments: []
             },
@@ -104,7 +120,7 @@ const portfolioData = {
                 id: "cense",
                 name: "CENSE Winter School",
                 fullTitle: "CENSE Winter School",
-                description: "Semiconductor fabrication, testing and packaging.",
+                description: "Attended a 2 week long school on Semiconductor fabrication, testing and packaging.",
                 github: null,
                 attachments: []
             },
@@ -112,7 +128,7 @@ const portfolioData = {
                 id: "skills",
                 name: "Technical Skills",
                 fullTitle: "Technical Skills",
-                description: "Verilog, C/C++, Python, ROS2, Linux, Cadence, OpenROAD.",
+                description: "C, C++, Python, Verilog HDL, MATLAB \nCadence Virtuoso, TerosHDL, GTKWave, Yosys, ROS2, MicroROS, FreeRTOS, Simulink, Linux\nSoft Skills: Problem Solving, Teamwork and Collaboration , Communication, Marketing",
                 github: null,
                 attachments: []
             }
@@ -120,24 +136,24 @@ const portfolioData = {
     },
 
     projects: {
-        chipTag: "U3 // VLSI CLUSTER",
+        chipTag: "Projects",
         title: "Projects",
-        subtitle: "VLSI CLUSTER — Project Index",
+        subtitle: "Projects done so far",
         items: [
             {
                 id: "rtl-gdsii",
                 name: "RTL→GDSII",
                 fullTitle: "RTL to GDSII Flow for PicoSOC + AES",
                 description: "Complete ASIC implementation flow from RTL through final layout using OpenROAD.",
-                github: "https://rohitlalu.github.io/",
+                github: "https://github.com/RohitLalu/CAD-Project-AES128-DMA-",
                 attachments: []
             },
             {
                 id: "fir",
                 name: "FIR",
                 fullTitle: "Dual Edge 5-Tap FIR Filter",
-                description: "High-performance FIR architecture utilizing dual-edge operation.",
-                github: "https://rohitlalu.github.io/",
+                description: "Moving average FIR filter design utilizing dual-edge operation.",
+                github: "https://github.com/RohitLalu/dsp_core_compression",
                 attachments: []
             },
             {
@@ -145,7 +161,7 @@ const portfolioData = {
                 name: "DAC",
                 fullTitle: "4-bit Segmented Current Steering DAC",
                 description: "Mixed-signal DAC designed and simulated using LTSpice.",
-                github: "https://rohitlalu.github.io/",
+                github: null,
                 attachments: []
             },
             {
@@ -153,23 +169,23 @@ const portfolioData = {
                 name: "8-bit CPU",
                 fullTitle: "8-bit Processor on FPGA",
                 description: "Custom ISA, assembler support and FPGA implementation.",
-                github: "https://rohitlalu.github.io/",
+                github: "https://github.com/EVAditya/finalsnake",
                 attachments: []
             }
         ]
     },
 
     competitions: {
-        chipTag: "U4 // ACCELERATORS",
+        chipTag: "Competitions",
         title: "Competitions",
-        subtitle: "ACCELERATOR CLUSTER — Competitions",
+        subtitle: "Competitions attended so far",
         items: [
             {
                 id: "robocon",
-                name: "Robocon",
-                fullTitle: "Robocon Basketball Playing Robots",
+                name: "DD Robocon",
+                fullTitle: "Basketball Playing Robots",
                 description: "Autonomous basketball robots for national robotics competition.",
-                github: "https://rohitlalu.github.io/",
+                github: "https://github.com/csd-robocon-nitk",
                 attachments: []
             },
             {
@@ -177,7 +193,7 @@ const portfolioData = {
                 name: "Samsung Chip Design Studio",
                 fullTitle: "Samsung Chip Design Studio — Time Domain Compute-In-Memory Accelerator",
                 description: "Research-oriented accelerator architecture exploration.",
-                github: "https://rohitlalu.github.io/",
+                github: "https://github.com/RohitLalu/Time-Domain-Compute-In-Memory-Accelerator-using-Memristor-Arrays",
                 attachments: []
             }
         ]
