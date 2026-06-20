@@ -259,8 +259,12 @@ function renderItemList(categoryId) {
     modalTitle.textContent = category.title;
     modalSubtitle.textContent = category.subtitle;
 
+    if (modalBody) {
+        modalBody.classList.remove("depth-2");
+    }
+
     const list = document.createElement("div");
-    list.className = "item-list";
+    list.className = `item-list cat-${categoryId}`;
 
     category.items.forEach(item => {
 
@@ -274,7 +278,7 @@ function renderItemList(categoryId) {
         btn.appendChild(meta);
 
         btn.addEventListener("click", () => {
-            openItem(categoryId, item.id);
+            openItem(categoryId, item.id, btn);
         });
 
         list.appendChild(btn);
@@ -295,6 +299,10 @@ function renderItemDetail(categoryId, itemId) {
 
     modalTitle.textContent = item.name;
     modalSubtitle.textContent = category.subtitle;
+
+    if (modalBody) {
+        modalBody.classList.add("depth-2");
+    }
 
     const wrap = document.createElement("div");
     wrap.className = "item-detail";
@@ -359,6 +367,108 @@ function renderItemDetail(categoryId, itemId) {
    the whole site look inert.
 ================================================== */
 
+function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/* ==================================================
+   FLIP ZOOM TRANSITIONS
+   Makes a popup appear to grow out of the exact block
+   or button that was clicked, instead of just fading in
+   centered on the screen -- "zoom into that region of
+   the chip." Both directions are defensive by design:
+   if there's no source rect, motion is reduced, or
+   anything here throws, the modal still opens/closes
+   normally via the plain CSS fade already in style.css.
+   This is a non-essential layer on top of an already-
+   working modal, never a requirement for it to function.
+================================================== */
+
+function flipEntrance(el, sourceRect) {
+
+    try {
+
+        if (!el || !sourceRect || prefersReducedMotion()) {
+            return;
+        }
+
+        const finalRect = el.getBoundingClientRect();
+
+        if (!finalRect.width || !finalRect.height) {
+            return;
+        }
+
+        const scaleX = sourceRect.width / finalRect.width;
+        const scaleY = sourceRect.height / finalRect.height;
+
+        const dx = (sourceRect.left + sourceRect.width / 2) - (finalRect.left + finalRect.width / 2);
+        const dy = (sourceRect.top + sourceRect.height / 2) - (finalRect.top + finalRect.height / 2);
+
+        el.style.transition = "none";
+        el.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`;
+        el.style.opacity = "0.5";
+
+        // Force the browser to commit that instant jump before we
+        // animate away from it, or the two style changes can get
+        // coalesced into a single paint and the zoom never shows.
+        el.getBoundingClientRect();
+
+        requestAnimationFrame(() => {
+            el.style.transition = "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease";
+            el.style.transform = "translate(0, 0) scale(1, 1)";
+            el.style.opacity = "1";
+        });
+
+        setTimeout(() => {
+            el.style.transition = "";
+            el.style.transform = "";
+            el.style.opacity = "";
+        }, 480);
+
+    } catch (err) {
+        console.error("SOC_DEBUG: flipEntrance failed:", err);
+    }
+}
+
+function flipExit(el, sourceRect, onComplete) {
+
+    try {
+
+        if (!el || !sourceRect || prefersReducedMotion()) {
+            onComplete();
+            return;
+        }
+
+        const currentRect = el.getBoundingClientRect();
+
+        if (!currentRect.width || !currentRect.height) {
+            onComplete();
+            return;
+        }
+
+        const scaleX = sourceRect.width / currentRect.width;
+        const scaleY = sourceRect.height / currentRect.height;
+
+        const dx = (sourceRect.left + sourceRect.width / 2) - (currentRect.left + currentRect.width / 2);
+        const dy = (sourceRect.top + sourceRect.height / 2) - (currentRect.top + currentRect.height / 2);
+
+        el.style.transition = "transform 0.35s cubic-bezier(0.4, 0, 0.7, 0.4), opacity 0.3s ease";
+        el.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`;
+        el.style.opacity = "0";
+
+        setTimeout(() => {
+            el.style.transition = "";
+            el.style.transform = "";
+            el.style.opacity = "";
+            onComplete();
+        }, 360);
+
+    } catch (err) {
+        console.error("SOC_DEBUG: flipExit failed:", err);
+        onComplete();
+    }
+}
+
 function openCategory(categoryId, triggerEl) {
 
     try {
@@ -374,6 +484,8 @@ function openCategory(categoryId, triggerEl) {
 
         lastFocusedElement = triggerEl || document.activeElement;
 
+        const sourceRect = triggerEl ? triggerEl.getBoundingClientRect() : null;
+
         currentCategory = categoryId;
         currentItem = null;
 
@@ -385,6 +497,8 @@ function openCategory(categoryId, triggerEl) {
         backdrop.classList.add("open");
         document.body.style.overflow = "hidden";
 
+        flipEntrance(panel, sourceRect);
+
         focusFirstInModal();
 
         document.addEventListener("keydown", handleModalKeydown);
@@ -394,15 +508,22 @@ function openCategory(categoryId, triggerEl) {
     }
 }
 
-function openItem(categoryId, itemId) {
+function openItem(categoryId, itemId, triggerEl) {
 
     try {
 
         currentItem = itemId;
 
+        const sourceRect = triggerEl ? triggerEl.getBoundingClientRect() : null;
+
         renderItemDetail(categoryId, itemId);
 
         history.replaceState(null, null, `#${categoryId}/${itemId}`);
+
+        // Zoom the body content (not the whole panel) from the
+        // clicked item-button -- the header stays put since it
+        // didn't change, only the content beneath it did.
+        flipEntrance(modalBody, sourceRect);
 
         focusFirstInModal();
 
@@ -419,6 +540,16 @@ function closeModal() {
             return;
         }
 
+        const sourceRect = (lastFocusedElement && typeof lastFocusedElement.getBoundingClientRect === "function")
+            ? lastFocusedElement.getBoundingClientRect()
+            : null;
+
+        document.removeEventListener("keydown", handleModalKeydown);
+
+        // Backdrop dim fades on its own existing CSS transition while
+        // the panel runs its shrink-into-origin animation at the same
+        // time, not after -- otherwise the dim outlasts the popup and
+        // the close looks like two separate things instead of one.
         backdrop.classList.remove("open");
         document.body.style.overflow = "";
 
@@ -429,11 +560,13 @@ function closeModal() {
 
         history.replaceState(null, null, window.location.pathname + window.location.search);
 
-        document.removeEventListener("keydown", handleModalKeydown);
+        const restoreFocus = () => {
+            if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+                lastFocusedElement.focus();
+            }
+        };
 
-        if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
-            lastFocusedElement.focus();
-        }
+        flipExit(panel, sourceRect, restoreFocus);
 
     } catch (err) {
         console.error("SOC_DEBUG: closeModal failed:", err);
